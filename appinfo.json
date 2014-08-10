@@ -1,0 +1,19 @@
+{
+    "appKeys": {},
+    "capabilities": [
+        ""
+    ],
+    "companyName": "fpotschies@gmail.com",
+    "longName": "Roundclock",
+    "projectType": "native",
+    "resources": {
+        "media": []
+    },
+    "shortName": "Roundclock",
+    "uuid": "5dffae15-4168-48b5-b3b1-ef8d87638a33",
+    "versionCode": 1,
+    "versionLabel": "1.0",
+    "watchapp": {
+        "watchface": true
+    }
+}
