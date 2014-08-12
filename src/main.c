@@ -30,8 +30,8 @@ static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int16_t radiu
         {center.x, 0},
         {center.x, center.y},
         {dx, dy},
-        {-1, dy},
-        {-1, 0}
+        {-1, center.y - radius - 1},
+        {-1, center.y - radius - 1}
       };
     } else {
       gp_info.num_points = 7;
@@ -40,9 +40,9 @@ static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int16_t radiu
         {center.x, center.y},
         {dx, dy},
         {2 * center.x + 1, dy},
-        {2 * center.x + 1, 2 * center.y + 1},
-        {-1, 2 * center.y + 1},
-        {-1, 0}
+        {2 * center.x + 1, center.y + radius + 1},
+        {-1, center.y + radius + 1},
+        {-1, center.y - radius - 1}
       };
     }
   }
@@ -55,7 +55,7 @@ static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int16_t radiu
         {center.x, center.y},
         {dx, dy},
         {2 * center.x + 1, dy},
-        {2 * center.x + 1, 0}
+        {2 * center.x + 1, center.y - radius -1}
       };
     }
     else {
@@ -66,8 +66,8 @@ static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int16_t radiu
         {dx, dy},
         {-1, dy},
         {-1, 2 * center.y + 1},
-        {2 * center.x + 1, 2 * center.y + 1},
-        {2 * center.x + 1, 0}
+        {2 * center.x + 1, center.y + radius + 1},
+        {2 * center.x + 1, center.y - radius - 1}
       };
     }
   }
