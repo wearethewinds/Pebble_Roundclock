@@ -99,7 +99,7 @@ static void draw_minutes_layer(Layer *layer, GContext *ctx) {
 
 static void draw_hours_layer(Layer *layer, GContext *ctx) {
   int16_t completion = ((((now->tm_hour % 12) * 60) + now->tm_min) * 100) / 720;
-  if (now->tm_hour >= 12) { completion = -100 + completion; }
+  if (now->tm_hour < 12) { completion = -100 + completion; }
   draw_layer(layer, ctx, hour_hider, hours_stroke_width, completion);
 }
 
