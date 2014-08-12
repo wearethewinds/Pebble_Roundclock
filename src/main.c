@@ -1,7 +1,7 @@
 #include <pebble.h>
   
 const int hours_stroke_width = 22;
-const int minutes_stroke_width = 12;
+const int minutes_stroke_width = 14;
 
 static Window *s_main_window;
 
@@ -39,8 +39,8 @@ static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int16_t radiu
         {center.x, 0},
         {center.x, center.y},
         {dx, dy},
-        {2 * center.x + 1, dy},
-        {2 * center.x + 1, center.y + radius + 1},
+        {center.x + radius + 1, dy},
+        {center.x + radius + 1, center.y + radius + 1},
         {-1, center.y + radius + 1},
         {-1, center.y - radius - 1}
       };
@@ -54,8 +54,8 @@ static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int16_t radiu
         {center.x, 0},
         {center.x, center.y},
         {dx, dy},
-        {2 * center.x + 1, dy},
-        {2 * center.x + 1, center.y - radius -1}
+        {center.x + radius + 1, dy},
+        {center.x + radius + 1, center.y - radius -1}
       };
     }
     else {
@@ -66,8 +66,8 @@ static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int16_t radiu
         {dx, dy},
         {-1, dy},
         {-1, 2 * center.y + 1},
-        {2 * center.x + 1, center.y + radius + 1},
-        {2 * center.x + 1, center.y - radius - 1}
+        {center.x + radius + 1, center.y + radius + 1},
+        {center.x + radius + 1, center.y - radius - 1}
       };
     }
   }
@@ -77,9 +77,10 @@ static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int16_t radiu
 }
 
 static void draw_circle(GContext *ctx, GPath *hider, GPoint center, int16_t radius, int16_t stroke_width, int8_t completion) {
-  for(int i = 0; i < stroke_width; i++) {
-    graphics_draw_circle(ctx, center, radius - i);
-  }
+  graphics_context_set_fill_color(ctx, GColorWhite);
+  graphics_fill_circle(ctx, center, radius);
+  graphics_context_set_fill_color(ctx, GColorBlack);
+  graphics_fill_circle(ctx, center, radius - stroke_width);
   draw_hider(ctx, hider, center, radius, completion);
 }
 
