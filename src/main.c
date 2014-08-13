@@ -13,7 +13,7 @@ static GPath *minute_hider;
 
 static struct tm *now;
 
-static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int16_t radius, int8_t completion) {
+static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int radius, int completion) {
   int angle = TRIG_MAX_ANGLE * abs(completion) / 100;
   int dx = 0;
   int new_x = sin_lookup(angle) * radius / TRIG_MAX_RATIO;
@@ -25,11 +25,12 @@ static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int16_t radiu
     completion = abs(completion);
     dx = center.x - new_x;
     if (completion <= 50) {
-      gp_info.num_points = 5;
+      gp_info.num_points = 6;
       gp_info.points = (GPoint []) {
         {center.x, 0},
         {center.x, center.y},
         {dx, dy},
+        {-1, dy},
         {-1, center.y - radius - 1},
         {-1, center.y - radius - 1}
       };
@@ -76,7 +77,7 @@ static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int16_t radiu
   gpath_draw_filled(ctx, hider);  
 }
 
-static void draw_circle(GContext *ctx, GPath *hider, GPoint center, int16_t radius, int16_t stroke_width, int8_t completion) {
+static void draw_circle(GContext *ctx, GPath *hider, GPoint center, int radius, int stroke_width, int completion) {
   graphics_context_set_fill_color(ctx, GColorWhite);
   graphics_fill_circle(ctx, center, radius);
   graphics_context_set_fill_color(ctx, GColorBlack);
@@ -84,22 +85,22 @@ static void draw_circle(GContext *ctx, GPath *hider, GPoint center, int16_t radi
   draw_hider(ctx, hider, center, radius, completion);
 }
 
-static void draw_layer(Layer *layer, GContext *ctx, GPath *hider, int16_t stroke_width, int8_t completion) {
+static void draw_layer(Layer *layer, GContext *ctx, GPath *hider, int stroke_width, int completion) {
   GRect bounds = layer_get_bounds(layer);
   graphics_context_set_stroke_color(ctx, GColorWhite);
-  const int16_t half_h = bounds.size.h / 2;
-  const int16_t half_w = bounds.size.w / 2;
+  const int half_h = bounds.size.h / 2;
+  const int half_w = bounds.size.w / 2;
   draw_circle(ctx, hider, GPoint(half_w, half_h), half_w, stroke_width, completion);
 }
 
 static void draw_minutes_layer(Layer *layer, GContext *ctx) {
-  int16_t completion = (now->tm_min * 100) / 60;
+  int completion = (now->tm_min * 100) / 60;
   if (now->tm_hour % 2 == 1) { completion = -100 + completion; }
   draw_layer(layer, ctx, minute_hider, minutes_stroke_width, completion);
 }
 
 static void draw_hours_layer(Layer *layer, GContext *ctx) {
-  int16_t completion = ((((now->tm_hour % 12) * 60) + now->tm_min) * 100) / 720;
+  int completion = ((((now->tm_hour % 12) * 60) + now->tm_min) * 100) / 720;
   if (now->tm_hour < 12) { completion = -100 + completion; }
   draw_layer(layer, ctx, hour_hider, hours_stroke_width, completion);
 }
