@@ -11,6 +11,9 @@ static Layer *s_minutes;
 static GPath *hour_hider;
 static GPath *minute_hider;
 
+static Layer *s_hours_structure;
+static Layer *s_minutes_structure;
+
 static struct tm *now;
 
 static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int radius, int completion) {
@@ -73,7 +76,7 @@ static void draw_hider(GContext *ctx, GPath *hider, GPoint center, int radius, i
     }
   }
   hider = gpath_create(&gp_info);
-  graphics_context_set_stroke_color(ctx, GColorClear);
+  graphics_context_set_stroke_color(ctx, GColorBlack);
   gpath_draw_filled(ctx, hider);  
 }
 
@@ -85,12 +88,37 @@ static void draw_circle(GContext *ctx, GPath *hider, GPoint center, int radius, 
   draw_hider(ctx, hider, center, radius, completion);
 }
 
+static void draw_structure_circles(GContext *ctx, GPoint center, int radius, int stroke_width) {
+  graphics_context_set_stroke_color(ctx, GColorWhite);
+  for (int i = 0; i < stroke_width; i++) {
+    graphics_draw_circle(ctx, center, radius - i);
+  }
+}
+
 static void draw_layer(Layer *layer, GContext *ctx, GPath *hider, int stroke_width, int completion) {
   GRect bounds = layer_get_bounds(layer);
-  graphics_context_set_stroke_color(ctx, GColorWhite);
   const int half_h = bounds.size.h / 2;
   const int half_w = bounds.size.w / 2;
-  draw_circle(ctx, hider, GPoint(half_w, half_h), half_w, stroke_width, completion);
+  GPoint center = GPoint(half_w, half_h);
+  draw_circle(ctx, hider, center, half_w - 1, stroke_width, completion);
+}
+
+static void draw_hours_structure_layer(Layer *layer, GContext *ctx) {
+  GRect bounds = layer_get_bounds(layer);
+  const int half_h = bounds.size.h / 2;
+  const int half_w = bounds.size.w / 2;
+  GPoint center = GPoint(half_w, half_h);
+  draw_structure_circles(ctx, center, half_w - 1, 3);
+  draw_structure_circles(ctx, center, half_w - 1 - hours_stroke_width, 3);
+}
+
+static void draw_minutes_structure_layer(Layer *layer, GContext *ctx) {
+  GRect bounds = layer_get_bounds(layer);
+  const int half_h = bounds.size.h / 2;
+  const int half_w = bounds.size.w / 2;
+  GPoint center = GPoint(half_w, half_h);
+  draw_structure_circles(ctx, center, half_w -1, 3);
+  draw_structure_circles(ctx, center, half_w - 1 - minutes_stroke_width, 3);
 }
 
 static void draw_minutes_layer(Layer *layer, GContext *ctx) {
@@ -121,10 +149,16 @@ static void main_window_load(Window *window) {
   initializeTime();
   s_hours = layer_create(window_bound);
   s_minutes = layer_create(get_bound_of_minute_circle(window_bound));
+  s_hours_structure = layer_create(window_bound);
+  s_minutes_structure = layer_create(get_bound_of_minute_circle(window_bound));                                  
   layer_set_update_proc(s_hours, draw_hours_layer);
   layer_set_update_proc(s_minutes, draw_minutes_layer);
+  layer_set_update_proc(s_hours_structure, draw_hours_structure_layer);
+  layer_set_update_proc(s_minutes_structure, draw_minutes_structure_layer);
   layer_add_child(window_get_root_layer(window), s_hours);
   layer_add_child(window_get_root_layer(window), s_minutes);
+  layer_add_child(window_get_root_layer(window), s_hours_structure);
+  layer_add_child(window_get_root_layer(window), s_minutes_structure);
   window_set_background_color(s_main_window, GColorBlack);
 }
 
@@ -154,7 +188,10 @@ void init(void) {
 void deinit(void) {
   layer_destroy(s_minutes);
   layer_destroy(s_hours);
+  layer_destroy(s_hours_structure);
+  layer_destroy(s_minutes_structure);
   window_destroy(s_main_window);
+  
 }
 
 int main(void) {
